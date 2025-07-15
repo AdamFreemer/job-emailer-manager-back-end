@@ -47,6 +47,11 @@ class DomainFilterSerializer(serializers.ModelSerializer):
         value = value.replace('http://', '').replace('https://', '')
         value = value.split('/')[0]  # Remove path
         return value
+    
+    def create(self, validated_data):
+        """Create domain filter with current user"""
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
 
 
 class OAuthCallbackSerializer(serializers.Serializer):

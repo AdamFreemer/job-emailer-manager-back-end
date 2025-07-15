@@ -35,6 +35,16 @@ def api_root(request):
                 'logout': '/api/auth/logout/',
                 'google_refresh': '/api/auth/google/refresh/',
                 'google_disconnect': '/api/auth/google/disconnect/',
+                'domains': '/api/auth/domains/',
+                'domain_detail': '/api/auth/domains/{id}/',
+            },
+            'applications': {
+                'list': '/api/apps/',
+                'create': '/api/apps/',
+                'detail': '/api/apps/{id}/',
+                'update_status': '/api/apps/{id}/update_status/',
+                'stats': '/api/apps/stats/',
+                'bulk_update': '/api/apps/bulk_update_status/',
             }
         }
     })
@@ -44,4 +54,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('core.urls')),
     path('api/auth/', include('accounts.urls')),
+    path('api/', include('applications.urls')),
 ]

@@ -10,12 +10,13 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .models import GoogleAccount
+from .models import GoogleAccount, DomainFilter
 from .serializers import (
     UserSerializer, 
     OAuthCallbackSerializer, 
     OAuthInitSerializer,
-    GoogleAccountSerializer
+    GoogleAccountSerializer,
+    DomainFilterSerializer
 )
 from .utils import (
     get_google_auth_flow, 
@@ -205,3 +206,75 @@ def logout_user(request):
         {'message': 'Logged out successfully'},
         status=status.HTTP_200_OK
     )
+
+
+class DomainFilterListCreateView(APIView):
+    """List and create domain filters"""
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        """Get user's domain filters"""
+        filters = DomainFilter.objects.filter(user=request.user)
+        serializer = DomainFilterSerializer(filters, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        """Create a new domain filter"""
+        serializer = DomainFilterSerializer(
+            data=request.data,
+            context={'request': request}
+        )
+        if serializer.is_valid():
+            # Check if domain already exists for user
+            existing = DomainFilter.objects.filter(
+                user=request.user,
+                domain=serializer.validated_data['domain']
+            ).first()
+            
+            if existing:
+                return Response(
+                    {'error': 'Domain filter already exists'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+            
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class DomainFilterDetailView(APIView):
+    """Update and delete domain filters"""
+    permission_classes = [IsAuthenticated]
+    
+    def get_object(self, pk):
+        try:
+            return DomainFilter.objects.get(pk=pk, user=self.request.user)
+        except DomainFilter.DoesNotExist:
+            return None
+    
+    def delete(self, request, pk):
+        """Delete a domain filter"""
+        domain_filter = self.get_object(pk)
+        if not domain_filter:
+            return Response(
+                {'error': 'Domain filter not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        domain_filter.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+    
+    def patch(self, request, pk):
+        """Toggle domain filter between allowed/blocked"""
+        domain_filter = self.get_object(pk)
+        if not domain_filter:
+            return Response(
+                {'error': 'Domain filter not found'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        domain_filter.is_allowed = not domain_filter.is_allowed
+        domain_filter.save()
+        
+        serializer = DomainFilterSerializer(domain_filter)
+        return Response(serializer.data)
