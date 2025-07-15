@@ -46,7 +46,12 @@ class DetailedHealthCheckView(View):
         
         # Check Redis
         try:
-            redis_client = redis.from_url(settings.CELERY_BROKER_URL)
+            redis_url = settings.CELERY_BROKER_URL
+            # Handle SSL for Heroku Redis
+            if redis_url.startswith('rediss://'):
+                redis_client = redis.from_url(redis_url, ssl_cert_reqs=None)
+            else:
+                redis_client = redis.from_url(redis_url)
             redis_client.ping()
             health_status['components']['redis'] = {
                 'status': 'healthy',
