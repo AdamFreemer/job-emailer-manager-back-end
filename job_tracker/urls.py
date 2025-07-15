@@ -28,6 +28,14 @@ def api_root(request):
             'health_detailed': '/api/health/detailed/',
             'status': '/api/status/',
             'admin': '/admin/',
+            'auth': {
+                'google_oauth_init': '/api/auth/oauth/google/',
+                'google_oauth_callback': '/api/auth/oauth/google/callback/',
+                'current_user': '/api/auth/user/',
+                'logout': '/api/auth/logout/',
+                'google_refresh': '/api/auth/google/refresh/',
+                'google_disconnect': '/api/auth/google/disconnect/',
+            }
         }
     })
 
@@ -35,4 +43,5 @@ urlpatterns = [
     path('', api_root, name='api-root'),
     path('admin/', admin.site.urls),
     path('api/', include('core.urls')),
+    path('api/auth/', include('accounts.urls')),
 ]

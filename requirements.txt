@@ -15,6 +15,7 @@ cryptography==41.0.7
 google-auth==2.25.2
 google-auth-oauthlib==1.2.0
 google-auth-httplib2==0.2.0
+djangorestframework-simplejwt==5.3.1
 
 # Google APIs
 google-api-python-client==2.111.0
