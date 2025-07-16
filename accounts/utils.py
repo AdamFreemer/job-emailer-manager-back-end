@@ -36,6 +36,9 @@ def get_google_auth_flow(redirect_uri: Optional[str] = None) -> Flow:
     if not settings.GOOGLE_CLIENT_ID or not settings.GOOGLE_CLIENT_SECRET:
         raise ValueError("Google OAuth credentials not configured")
     
+    # Add 'openid' to scopes since Google adds it automatically
+    scopes_with_openid = SCOPES + ['openid'] if 'openid' not in SCOPES else SCOPES
+    
     client_config = {
         "web": {
             "client_id": settings.GOOGLE_CLIENT_ID,
@@ -48,7 +51,7 @@ def get_google_auth_flow(redirect_uri: Optional[str] = None) -> Flow:
     
     flow = Flow.from_client_config(
         client_config,
-        scopes=SCOPES,
+        scopes=scopes_with_openid,
         redirect_uri=redirect_uri or settings.GOOGLE_REDIRECT_URI
     )
     

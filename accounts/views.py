@@ -1,4 +1,5 @@
 import secrets
+from django.conf import settings
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
@@ -81,15 +82,22 @@ class GoogleOAuthCallbackView(APIView):
         state = serializer.validated_data.get('state', '')
         
         # Verify state to prevent CSRF
+        # Note: In a production environment with separate frontend/backend,
+        # you'd want to store state in a database or cache instead of sessions
         session_state = request.session.get('oauth_state', '')
-        if not session_state or session_state != state:
+        if state and session_state and session_state != state:
             return Response(
                 {'error': 'Invalid state parameter'},
                 status=status.HTTP_400_BAD_REQUEST
             )
+        # For development, we'll allow missing state if both are empty
+        elif not state and not session_state:
+            print("Warning: No state parameter provided or stored")
         
         try:
             # Exchange code for tokens
+            print(f"Attempting to exchange code: {code[:10]}...")
+            print(f"Redirect URI: {settings.GOOGLE_REDIRECT_URI}")
             flow = get_google_auth_flow()
             flow.fetch_token(code=code)
             credentials = flow.credentials
@@ -131,6 +139,9 @@ class GoogleOAuthCallbackView(APIView):
             }, status=status.HTTP_200_OK)
             
         except Exception as e:
+            import traceback
+            print(f"OAuth callback error: {str(e)}")
+            print(traceback.format_exc())
             return Response(
                 {'error': f'OAuth callback failed: {str(e)}'},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR

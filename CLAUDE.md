@@ -12,6 +12,11 @@ This is a job application tracker that integrates with Gmail to:
 - Track application status through a pipeline
 - Extract and analyze job listings from emails
 
+## Deployment URLs
+- Frontend (Vercel): https://job-emailer-manager-front-end.vercel.app
+- Backend (Heroku): https://job-emailer-backend-7785fbaa7e6d.herokuapp.com
+- Backend API: https://job-emailer-backend-7785fbaa7e6d.herokuapp.com/api
+
 ## Technical Stack
 - Backend: Django + Django REST Framework (similar to Rails + Rails API)
 - Task Queue: Celery (similar to Sidekiq in Rails)
