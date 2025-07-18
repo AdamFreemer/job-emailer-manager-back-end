@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 from django.db import models
 
 from gmail.models import Email
-from gmail.serializers import EmailSerializer
+from gmail.serializers import EmailSerializer, EmailListSerializer
 from gmail.services import GmailService
 
 
@@ -93,7 +93,7 @@ def list_emails(request):
         )
     
     # Order by date
-    emails = emails.order_by('-date_received')
+    emails = emails.order_by('-received_at')
     
     # Paginate
     from django.core.paginator import Paginator
@@ -101,7 +101,7 @@ def list_emails(request):
     page_number = request.query_params.get('page', 1)
     page_obj = paginator.get_page(page_number)
     
-    serializer = EmailSerializer(page_obj, many=True)
+    serializer = EmailListSerializer(page_obj, many=True)
     
     return Response({
         'results': serializer.data,
@@ -127,7 +127,7 @@ def email_detail(request, email_id):
             serializer.save()
             
             # If marking as processed, mark as read in Gmail
-            if request.data.get('status') == 'PROCESSED':
+            if request.data.get('category') == 'PROCESSED':
                 try:
                     gmail_service = GmailService(request.user)
                     gmail_service.mark_as_read(email.gmail_id)
