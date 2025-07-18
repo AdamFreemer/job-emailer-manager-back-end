@@ -190,13 +190,11 @@ class GmailService:
                 gmail_id=email_data['gmail_id'],
                 thread_id=email_data['thread_id'],
                 subject=email_data['subject'],
-                sender=email_data['sender'],
-                sender_email=email_data['sender_email'],
+                sender=email_data['sender_email'],  # Email model expects email address in sender field
                 recipient=email_data['recipient'],
-                date_received=self._parse_date(email_data['date']),
-                body_text=email_data['body_text'],
-                body_html=email_data['body_html'],
-                raw_data={'labels': email_data['labels'], 'snippet': email_data['snippet']}
+                received_at=self._parse_date(email_data['date']),  # Field is received_at not date_received
+                body_plain=email_data['body_text'],  # Field is body_plain not body_text
+                body_html=email_data['body_html']
             )
             
             saved_count += 1

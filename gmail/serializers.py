@@ -19,15 +19,13 @@ class EmailSerializer(serializers.ModelSerializer):
             'thread_id',
             'subject',
             'sender',
-            'sender_email',
             'recipient',
-            'date_received',
-            'body_text',
+            'received_at',
+            'body_plain',
             'body_html',
-            'status',
-            'is_job_related',
-            'classification_confidence',
-            'raw_data',
+            'category',
+            'sub_category',
+            'has_to_respond_label',
             'created_at',
             'updated_at',
             'application',
@@ -37,10 +35,9 @@ class EmailSerializer(serializers.ModelSerializer):
             'gmail_id',
             'thread_id',
             'sender',
-            'sender_email',
             'recipient',
-            'date_received',
-            'body_text',
+            'received_at',
+            'body_plain',
             'body_html',
             'created_at',
             'updated_at',
@@ -48,7 +45,7 @@ class EmailSerializer(serializers.ModelSerializer):
     
     def get_has_application(self, obj):
         """Check if email has associated application"""
-        return hasattr(obj, 'application')
+        return hasattr(obj, 'application') and obj.application is not None
 
 
 class EmailListSerializer(serializers.ModelSerializer):
@@ -61,13 +58,12 @@ class EmailListSerializer(serializers.ModelSerializer):
             'id',
             'subject',
             'sender',
-            'sender_email',
-            'date_received',
-            'status',
-            'is_job_related',
+            'received_at',
+            'category',
+            'sub_category',
             'has_application',
         ]
     
     def get_has_application(self, obj):
         """Check if email has associated application"""
-        return hasattr(obj, 'application')
+        return hasattr(obj, 'application') and obj.application is not None
