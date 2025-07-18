@@ -15,7 +15,7 @@ class Email(models.Model):
         ("INTERESTED", "Interested")
     ]
     
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='emails')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='emails', null=True)
     application = models.ForeignKey(Application, on_delete=models.CASCADE, null=True, blank=True, related_name='emails')
     gmail_id = models.CharField(max_length=128, unique=True)
     thread_id = models.CharField(max_length=128)
