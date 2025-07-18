@@ -45,6 +45,12 @@ def api_root(request):
                 'update_status': '/api/apps/{id}/update_status/',
                 'stats': '/api/apps/stats/',
                 'bulk_update': '/api/apps/bulk_update_status/',
+            },
+            'gmail': {
+                'fetch': '/api/gmail/fetch/',
+                'list': '/api/gmail/',
+                'detail': '/api/gmail/{id}/',
+                'create_application': '/api/gmail/{id}/create-application/',
             }
         }
     })
@@ -55,4 +61,5 @@ urlpatterns = [
     path('api/', include('core.urls')),
     path('api/auth/', include('accounts.urls')),
     path('api/', include('applications.urls')),
+    path('api/gmail/', include('gmail.urls')),
 ]
